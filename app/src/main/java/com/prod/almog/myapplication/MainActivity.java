@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
     private String reminderTime = "09:00";
-    private List<Kid> kids = new ArrayList<>();
+    private ArrayList<Kid> kids = new ArrayList<>();
     Kindergarden selectedKindergarden;
     ArrayList<String> kinderGardenKidsIds = new ArrayList<>();
     KidItemAdapter customAdapter;
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseStorage = FirebaseStorage.getInstance();
-
+        Helper.me().context = this.getBaseContext();
     }
 
 
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             e.toString();
                         }
-                        Helper.me().kids = kids;
+                        Helper.me().setKids(kids);
                         GridView yourListView = (GridView) findViewById(R.id.kids_list_view);
                         customAdapter = new KidItemAdapter(getApplicationContext(), R.layout.kid_item, kids);
                         yourListView.setAdapter(customAdapter);

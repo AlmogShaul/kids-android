@@ -1,8 +1,10 @@
 package com.prod.almog.myapplication;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.telephony.SmsManager;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,8 +41,14 @@ public class Helper {
     Calendar c = Calendar.getInstance();
 
     private static Helper instance = null;
-    public List<Kid> kids = new ArrayList<>();
-    private boolean stopSMS;
+    private ArrayList<Kid> kids = new ArrayList<>();
+    public boolean stopSMS;
+    public Context context;
+
+    public void setKids(ArrayList<Kid> kids) {
+        this.kids = kids;
+        Scheduler.me().start(kids);
+    }
 
     public static Helper me() {
         if(instance == null) {
@@ -56,7 +64,7 @@ public class Helper {
 
         final String audioFile = "good_morning";
         getAudioFileToMap(audioFile);
-        scheduleSMS();
+//        scheduleSMS();
 
     }
 
@@ -142,6 +150,12 @@ public class Helper {
     public byte[] getRandomCongrats() {
         Set<String> keys = Helper.me().congrats.keySet();
         return Helper.me().congrats.get(keys.toArray()[0]);
+    }
+
+
+    public void toast(String message) {
+        Toast toast = Toast.makeText(context, message,Toast.LENGTH_LONG);
+        toast.show();
     }
 }
 
