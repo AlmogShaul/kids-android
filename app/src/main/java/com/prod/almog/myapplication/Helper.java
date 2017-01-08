@@ -1,6 +1,10 @@
 package com.prod.almog.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.telephony.SmsManager;
 import android.widget.GridView;
@@ -39,7 +43,10 @@ public class Helper {
     private FirebaseStorage firebaseStorage;
     SmsManager smsManager = SmsManager.getDefault();
     Calendar c = Calendar.getInstance();
-
+    private Activity activity;
+    public void setActivity(Activity _activity){
+        activity = _activity;
+    }
     private static Helper instance = null;
     private ArrayList<Kid> kids = new ArrayList<>();
     public boolean stopSMS;
@@ -47,7 +54,15 @@ public class Helper {
 
     public void setKids(ArrayList<Kid> kids) {
         this.kids = kids;
-        Scheduler.me().start(kids);
+        String debugMode = Helper.me().settings.get("debugMode");
+        if(debugMode!= null && debugMode.equals("true"))
+        {
+            DebugScheduler.me().start(kids);
+        }
+        else{
+            Scheduler.me().start(kids);
+        }
+
     }
 
     public static Helper me() {
@@ -85,6 +100,7 @@ public class Helper {
         });
     }
 
+    public HashMap<String,String> settings = new HashMap<>();
     private void getSettings(){
 
         DatabaseReference kidsRef = databaseReference.child("settings");
@@ -99,7 +115,8 @@ public class Helper {
                             while (it.hasNext()) {
                                 Map.Entry pair = (Map.Entry) it.next();
                                 HashMap rawKid = (HashMap) pair.getValue();
-                                stopSMS = (boolean)rawKid.get("stopSMS");
+                                settings.put("stopSMS",(String)rawKid.get("stopSMS"));
+                                settings.put("debugMode",(String)rawKid.get("debugMode"));
                                 it.remove();
                             }
                         } catch (Exception e) {
@@ -113,49 +130,19 @@ public class Helper {
                 });
     }
 
-    void scheduleSMS(){
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    while(true) {
-                        sleep(1000*60);
-                        if(stopSMS) return;
-                        for (Kid kid :kids) {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                            Date kidReminderTime = simpleDateFormat.parse(kid.reminderTime);
-
-                            String minute = String.valueOf( c.get(Calendar.MINUTE));
-                            String hour = String.valueOf(c.get(Calendar.HOUR_OF_DAY));
-                            String time = hour + ":" + minute;
-                            Date nowTime = simpleDateFormat.parse(time);
-                            boolean timePassed = nowTime.compareTo(kidReminderTime) > 0 ;
-                            if(!kid.arrived && timePassed && !kid.messageSent ){
-                                smsManager.sendTextMessage(kid.fatherPhone, "0000000", kid.name +" לא הגיע היום לגן.", null, null);
-                                kid.messageSent = true;
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        thread.start();
-    }
-
     public byte[] getRandomCongrats() {
         Set<String> keys = Helper.me().congrats.keySet();
         return Helper.me().congrats.get(keys.toArray()[0]);
     }
 
 
-    public void toast(String message) {
-        Toast toast = Toast.makeText(context, message,Toast.LENGTH_LONG);
-        toast.show();
+    public void toast(final String message) {
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 }
 

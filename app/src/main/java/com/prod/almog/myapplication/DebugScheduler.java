@@ -1,8 +1,6 @@
 package com.prod.almog.myapplication;
 
 import android.telephony.SmsManager;
-import android.widget.CursorAdapter;
-import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,27 +12,22 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.LogManager;
 
 /**
  * Created by shaul.almog on 06/11/2016.
  */
-public class Scheduler {
+public class DebugScheduler {
 
-    private static Scheduler instance = null;
+    private static DebugScheduler instance = null;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-    public static Scheduler me() {
+    public static DebugScheduler me() {
         if(instance == null) {
-            instance = new Scheduler();
+            instance = new DebugScheduler();
         }
         return instance;
     }
-
-    private Scheduler(){}
-
-    SmsManager smsManager = SmsManager.getDefault();
+    private DebugScheduler(){}
     private ArrayList<Kid> kids = new ArrayList<>();
 
     public void start(ArrayList<Kid> _kids){
@@ -49,7 +42,8 @@ public class Scheduler {
             synchronized public void run() {
                 startDayScheduleTask();
             }
-        },getFirstEarlyMorning(), 1);
+        },new Date(), 1);
+
     }
 
     private void startDayScheduleTask() {
@@ -106,14 +100,6 @@ public class Scheduler {
         return kidReminderTimeInt < nowTimeInt;
     }
 
-    private Date getFirstEarlyMorning() {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        return new GregorianCalendar(year, month, day, 7, 0).getTime();
-    }
-
     private Integer getNowTimeInt(){
         Date date = new Date();   // given date
         Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
@@ -125,7 +111,7 @@ public class Scheduler {
 
     private void sendSMS(Kid kid) {
         String message =kid.name +" לא הגיע היום לגן.";
-        smsManager.sendTextMessage(kid.fatherPhone, "0000000", message, null, null);
+        Helper.me().toast(message);
         kid.messageSent = true;
     }
 }
