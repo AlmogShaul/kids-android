@@ -2,6 +2,7 @@ package com.prod.almog.myapplication;
 
 import android.telephony.SmsManager;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,8 +30,12 @@ public class DebugScheduler {
     }
     private DebugScheduler(){}
     private ArrayList<Kid> kids = new ArrayList<>();
+    private ArrayList<Date> holidays = new ArrayList<>();
 
-    public void start(ArrayList<Kid> _kids){
+    public void start(ArrayList<Kid> _kids,ArrayList<Date> _holidays){
+        kids = new ArrayList<>();
+        holidays=new ArrayList<>();
+        holidays.addAll(_holidays);
         kids.addAll(_kids);
         startSchedule();
     }
@@ -42,7 +47,7 @@ public class DebugScheduler {
             synchronized public void run() {
                 startDayScheduleTask();
             }
-        },new Date(), 1);
+        },new Date());
 
     }
 
@@ -52,16 +57,29 @@ public class DebugScheduler {
         executorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                for (Kid kid:kids) {
-                    kid.arrived = false;
-                    scheduleKidNotification(kid);
+                clearKidExecutors();
+                if(!isHoliday()) {
+                    for (Kid kid : kids) {
+                        String name = kid.name;
+                        scheduleKidNotification(kid);
+                    }
                 }
             }
         },0,1, TimeUnit.DAYS);
     }
 
+    private void clearKidExecutors() {
+        for(ScheduledExecutorService service : kidExecutors){
+            service.shutdown();
+        }
+        kidExecutors.clear();
+    }
+
+    private ArrayList<ScheduledExecutorService> kidExecutors = new ArrayList<ScheduledExecutorService>();
+
     private void scheduleKidNotification(final Kid _kid){
         final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+        kidExecutors.add(executorService);
         Runnable run = new Runnable() {
             @Override
             public void run() {
@@ -70,9 +88,6 @@ public class DebugScheduler {
                 boolean willSendSMS = willSendSMS(_kid,timePassed);
                 if(willSendSMS){
                     sendSMS(_kid);
-                }
-                else{
-                    executorService.shutdown();
                 }
             }
             private boolean isNotifyTimeValid() {
@@ -89,8 +104,23 @@ public class DebugScheduler {
         executorService.scheduleAtFixedRate(run,0,1, TimeUnit.MINUTES);
     }
 
+    private boolean isHoliday() {
+        boolean sameDay = false;
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.setTime(new Date());
+        for (Date date : holidays) {
+            cal2.setTime(date);
+            sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+        }
+        return sameDay;
+    }
+
+
+
     private boolean willSendSMS(Kid _kid,boolean timePassed){
-        return !_kid.arrived && timePassed && !_kid.messageSent;
+        return !_kid.arrived && timePassed ;
     }
 
     private boolean isTimePassed(Kid _kid) {
@@ -106,12 +136,21 @@ public class DebugScheduler {
         calendar.setTime(date);   // assigns calendar to given date
         String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
         String min =  String.valueOf(calendar.get(Calendar.MINUTE));
+        if(min.length() == 1 ){
+            hour= "0" + min;
+        }
         return  Integer.parseInt(hour+min);
     }
 
     private void sendSMS(Kid kid) {
         String message =kid.name +" לא הגיע היום לגן.";
+//        SmsManager smsManager = SmsManager.getDefault();
+//        smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
         Helper.me().toast(message);
         kid.messageSent = true;
+    }
+
+    public void clearWorkers() {
+        clearKidExecutors();
     }
 }

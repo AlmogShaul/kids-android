@@ -6,6 +6,7 @@ package com.prod.almog.myapplication;
 public class Kindergarden {
     String id;
     String name;
+    String phone;
 
     @Override
     public String toString() {

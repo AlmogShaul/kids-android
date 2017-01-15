@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseStorage = FirebaseStorage.getInstance();
-        Helper.me().context = this.getBaseContext();
         Helper.me().setActivity(this);
     }
 
@@ -60,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ListenToKindergardensRef();
         selectedKindergarden = Helper.me().selectedKindergarden;
+        Helper.me().context = this.getBaseContext();
 
     }
 
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         kid.motherPhone = (String) rawKid.get("motherPhone");
         kid.fatherPhone = (String) rawKid.get("fatherPhone");
         kid.reminderTime = (String) rawKid.get("reminderTime");
-        kid.arrived = (Boolean) rawKid.get("arrived");
+        kid.arrived = (Boolean)rawKid.get("arrived");
         if (kid.arrived == null) kid.arrived = false;
         return kid;
     }

@@ -1,9 +1,11 @@
 package com.prod.almog.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.internal.widget.AdapterViewCompat;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -54,11 +56,17 @@ public class WellcomActivity extends AppCompatActivity {
                                 Kindergarden kg = new Kindergarden();
                                 kg.id = (String)pair.getKey();
                                 kg.name = (String)val.get("name");
+                                kg.phone = (String)val.get("phone");
                                 kindergardens.add(kg);
                                 it.remove();
                             }
+                            MatchKindergardenByPhone();
+
                         }
-                        catch(Exception e){}
+                        catch(Exception e){
+                            e.toString();
+                        }
+
 
                         AutoCompleteTextView actv = (AutoCompleteTextView) findViewById(R.id.kg_auto_complete);
                         KindergardenItemAdapter adapter = new KindergardenItemAdapter(getApplicationContext(), R.layout.kindergarden_item,kindergardens);
@@ -89,6 +97,24 @@ public class WellcomActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(DatabaseError databaseError) {}
                 });
+    }
+
+    private void MatchKindergardenByPhone() {
+        String phone = getDevicePhoneNumber();
+        for (Kindergarden kg :kindergardens) {
+            if(kg.phone.equals(phone)) {
+                Helper.me().selectedKindergarden = kg;
+            }
+        }
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getApplicationContext().startActivity(intent);
+    }
+
+    private String getDevicePhoneNumber() {
+        TelephonyManager tMgr = (TelephonyManager)this.getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+        String mPhoneNumber = tMgr.getLine1Number();
+        return mPhoneNumber.replace("+972","0");
     }
 
 

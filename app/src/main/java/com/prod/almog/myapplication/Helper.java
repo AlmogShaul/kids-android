@@ -2,6 +2,7 @@ package com.prod.almog.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -41,7 +43,6 @@ public class Helper {
     public HashMap<String, byte[]> congrats = new HashMap<>();
     private StorageReference storageRef;
     private FirebaseStorage firebaseStorage;
-    SmsManager smsManager = SmsManager.getDefault();
     Calendar c = Calendar.getInstance();
     private Activity activity;
     public void setActivity(Activity _activity){
@@ -51,16 +52,28 @@ public class Helper {
     private ArrayList<Kid> kids = new ArrayList<>();
     public boolean stopSMS;
     public Context context;
+    DatabaseReference settingsRef;
 
     public void setKids(ArrayList<Kid> kids) {
         this.kids = kids;
         String debugMode = Helper.me().settings.get("debugMode");
-        if(debugMode!= null && debugMode.equals("true"))
-        {
-            DebugScheduler.me().start(kids);
+
+        ArrayList<Date> holidays = new ArrayList<>();
+        String _holidays = settings.get("holidays");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        if (_holidays != null) {
+            String[] arr = _holidays.split(";");
+            for (String item : arr) {
+                try {
+                    holidays.add(formatter.parse(item));
+                } catch (ParseException e) {
+                }
+            }
         }
-        else{
-            Scheduler.me().start(kids);
+        if (debugMode != null && debugMode.toLowerCase().equals("true")) {
+            DebugScheduler.me().start(kids, holidays);
+        } else {
+            Scheduler.me().start(kids, holidays);
         }
 
     }
@@ -75,16 +88,14 @@ public class Helper {
     private Helper() {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseStorage = FirebaseStorage.getInstance();
+        settingsRef = databaseReference.child("settings");
+
         storageRef = firebaseStorage.getReferenceFromUrl("gs://kids-f5aa3.appspot.com");
-
-        final String audioFile = "good_morning";
-        getAudioFileToMap(audioFile);
-//        scheduleSMS();
-
+        getSettings();
     }
 
     private void getAudioFileToMap(final String audioFile) {
-        StorageReference pathReference = storageRef.child("audio/" + audioFile + ".mp3");
+        StorageReference pathReference = storageRef.child("audio/" + audioFile);
         final long ONE_MEGABYTE = 3024 * 3024;
         pathReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
@@ -101,10 +112,10 @@ public class Helper {
     }
 
     public HashMap<String,String> settings = new HashMap<>();
+
     private void getSettings(){
 
-        DatabaseReference kidsRef = databaseReference.child("settings");
-        kidsRef.addListenerForSingleValueEvent(
+        settingsRef.addValueEventListener(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -114,11 +125,11 @@ public class Helper {
                             Iterator it = list.entrySet().iterator();
                             while (it.hasNext()) {
                                 Map.Entry pair = (Map.Entry) it.next();
-                                HashMap rawKid = (HashMap) pair.getValue();
-                                settings.put("stopSMS",(String)rawKid.get("stopSMS"));
-                                settings.put("debugMode",(String)rawKid.get("debugMode"));
+                                settings.put((String)pair.getKey(),(String)pair.getValue());
                                 it.remove();
                             }
+                            mapCongratFiles();
+                            decideIfRestart();
                         } catch (Exception e) {
                             e.toString();
                         }
@@ -130,9 +141,42 @@ public class Helper {
                 });
     }
 
-    public byte[] getRandomCongrats() {
+    private void decideIfRestart() {
+        String restart =settings.get("restart");
+        if(restart!=null && restart.equals("true"))
+        {
+            DebugScheduler.me().clearWorkers();
+            if(context!=null){
+                Intent i = context.getPackageManager()
+                        .getLaunchIntentForPackage( context.getPackageName() );
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                context.startActivity(i);
+            }
+
+        }
+    }
+
+
+    private void mapCongratFiles() {
+        String congratsFilesStr = settings.get("congratsFiles");
+        String[] congratsFiles;
+        if(congratsFilesStr!=null){
+            congratsFiles = congratsFilesStr.split(";");
+            for (String file : congratsFiles) {
+                getAudioFileToMap(file);
+            }
+        }
+    }
+
+    public byte[] getRandomCongrat() {
         Set<String> keys = Helper.me().congrats.keySet();
-        return Helper.me().congrats.get(keys.toArray()[0]);
+        if(keys !=null) {
+            Integer randomAccessNumber = new Random().nextInt(keys.size());
+            return Helper.me().congrats.get(keys.toArray()[randomAccessNumber]);
+        }
+        else {
+            return null;
+        }
     }
 
 

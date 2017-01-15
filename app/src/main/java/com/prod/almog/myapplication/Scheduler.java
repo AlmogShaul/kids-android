@@ -31,17 +31,31 @@ public class Scheduler {
         }
         return instance;
     }
+    private ArrayList<Date> holidays = new ArrayList<>();
 
     private Scheduler(){}
 
     SmsManager smsManager = SmsManager.getDefault();
     private ArrayList<Kid> kids = new ArrayList<>();
 
-    public void start(ArrayList<Kid> _kids){
+    public void start(ArrayList<Kid> _kids,ArrayList<Date> _holidays){
+        holidays.addAll(_holidays);
         kids.addAll(_kids);
         startSchedule();
     }
 
+    private boolean isHoliday() {
+        boolean sameDay = false;
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.setTime(new Date());
+        for (Date date : holidays) {
+            cal2.setTime(date);
+            sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+        }
+        return sameDay;
+    }
 
     public void startSchedule(){
         Timer timer = new Timer();
@@ -49,8 +63,16 @@ public class Scheduler {
             synchronized public void run() {
                 startDayScheduleTask();
             }
-        },getFirstEarlyMorning(), 1);
+        },getFirstEarlyMorning());
     }
+
+    private void clearKidExecutors() {
+        for(ScheduledExecutorService service : kidExecutors){
+            service.shutdown();
+        }
+        kidExecutors.clear();
+    }
+
 
     private void startDayScheduleTask() {
         executorService.shutdown();
@@ -58,16 +80,22 @@ public class Scheduler {
         executorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                for (Kid kid:kids) {
-                    kid.arrived = false;
-                    scheduleKidNotification(kid);
+                if(!isHoliday()) {
+                    for (Kid kid : kids) {
+                        kid.arrived = false;
+                        scheduleKidNotification(kid);
+                    }
                 }
             }
         },0,1, TimeUnit.DAYS);
     }
 
+    private ArrayList<ScheduledExecutorService> kidExecutors = new ArrayList<ScheduledExecutorService>();
+
     private void scheduleKidNotification(final Kid _kid){
         final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+        kidExecutors.add(executorService);
+
         Runnable run = new Runnable() {
             @Override
             public void run() {
@@ -76,9 +104,6 @@ public class Scheduler {
                 boolean willSendSMS = willSendSMS(_kid,timePassed);
                 if(willSendSMS){
                     sendSMS(_kid);
-                }
-                else{
-                    executorService.shutdown();
                 }
             }
             private boolean isNotifyTimeValid() {
@@ -111,7 +136,15 @@ public class Scheduler {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-        return new GregorianCalendar(year, month, day, 7, 0).getTime();
+        Date date = new GregorianCalendar(year, month, day, 7, 0).getTime();
+        if(new Date().before(date)) {
+            return date;
+        }
+        else{
+            GregorianCalendar gregorianCalendar = new GregorianCalendar(year, month, day, 7, 0);
+            gregorianCalendar.add(Calendar.DATE,1);
+            return gregorianCalendar.getTime();
+        }
     }
 
     private Integer getNowTimeInt(){
@@ -125,7 +158,7 @@ public class Scheduler {
 
     private void sendSMS(Kid kid) {
         String message =kid.name +" לא הגיע היום לגן.";
-        smsManager.sendTextMessage(kid.fatherPhone, "0000000", message, null, null);
+        smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
         kid.messageSent = true;
     }
 }

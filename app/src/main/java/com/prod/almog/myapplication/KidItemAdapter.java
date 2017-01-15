@@ -73,7 +73,10 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
                     kids.get(position).arrived =  !kids.get(position).arrived;
                     SetToggleButtonColor(view, position);
                     updateServer(kids.get(position));
-                    play(Helper.me().getRandomCongrats());
+                    if(kids.get(position).arrived == true)
+                    {
+                        play(Helper.me().getRandomCongrat());
+                    }
                 }
 
             });
@@ -115,24 +118,22 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
             // create temp file that will hold byte array
             File tempMp3 = File.createTempFile("temp_kids_audio", "mp3", getContext().getCacheDir());
             tempMp3.deleteOnExit();
+
             FileOutputStream fos = new FileOutputStream(tempMp3);
             fos.write(mp3SoundByteArray);
             fos.close();
-
-            // resetting mediaplayer instance to evade problems
             mediaPlayer.reset();
-
-            // In case you run into issues with threading consider new instance like:
-            // MediaPlayer mediaPlayer = new MediaPlayer();
-
-            // Tried passing path directly, but kept getting
-            // "Prepare failed.: status=0x1"
-            // so using file descriptor instead
             FileInputStream fis = new FileInputStream(tempMp3);
             mediaPlayer.setDataSource(fis.getFD());
 
             mediaPlayer.prepare();
             mediaPlayer.start();
+
+            //TODO:(shaul) check if needed
+//            FileOutputStream fos = new FileOutputStream(tempMp3);
+//            fos.write(mp3SoundByteArray);
+//            fos.close();
+
         } catch (IOException ex) {
             String s = ex.toString();
             ex.printStackTrace();
