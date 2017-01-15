@@ -144,9 +144,15 @@ public class DebugScheduler {
 
     private void sendSMS(Kid kid) {
         String message =kid.name +" לא הגיע היום לגן.";
-//        SmsManager smsManager = SmsManager.getDefault();
-//        smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
-        Helper.me().toast(message);
+        String stopSMS = Helper.me().settings.get("stopSMS");
+        if(stopSMS == null) stopSMS = "false";
+        if(stopSMS.equals("true")){
+            Helper.me().toast(message);
+        }
+        else{
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
+        }
         kid.messageSent = true;
     }
 

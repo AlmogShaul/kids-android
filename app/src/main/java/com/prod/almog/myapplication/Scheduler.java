@@ -158,7 +158,11 @@ public class Scheduler {
 
     private void sendSMS(Kid kid) {
         String message =kid.name +" לא הגיע היום לגן.";
-        smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
+        String stopSMS = Helper.me().settings.get("stopSMS");
+        if(stopSMS == null) stopSMS = "false";
+        if(stopSMS.equals("true")) {
+            smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
+        }
         kid.messageSent = true;
     }
 }

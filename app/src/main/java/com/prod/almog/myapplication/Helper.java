@@ -50,7 +50,6 @@ public class Helper {
     }
     private static Helper instance = null;
     private ArrayList<Kid> kids = new ArrayList<>();
-    public boolean stopSMS;
     public Context context;
     DatabaseReference settingsRef;
 
