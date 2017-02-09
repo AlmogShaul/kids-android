@@ -124,14 +124,22 @@ public class Helper {
                             Iterator it = list.entrySet().iterator();
                             while (it.hasNext()) {
                                 Map.Entry pair = (Map.Entry) it.next();
-                                settings.put((String)pair.getKey(),(String)pair.getValue());
+                                if(pair.getValue() instanceof Boolean)
+                                {
+                                    Boolean pairValue = (Boolean) pair.getValue();
+                                    settings.put((String)pair.getKey(),pairValue.toString());
+                                }
+                                else{
+                                    settings.put((String)pair.getKey(),(String)pair.getValue());
+                                }
                                 it.remove();
                             }
-                            mapCongratFiles();
-                            decideIfRestart();
+
                         } catch (Exception e) {
                             e.toString();
                         }
+                        mapCongratFiles();
+                        decideIfRestart();
                     }
 
                     @Override
@@ -169,7 +177,7 @@ public class Helper {
 
     public byte[] getRandomCongrat() {
         Set<String> keys = Helper.me().congrats.keySet();
-        if(keys !=null) {
+        if(keys !=null && keys.size() > 0) {
             Integer randomAccessNumber = new Random().nextInt(keys.size());
             return Helper.me().congrats.get(keys.toArray()[randomAccessNumber]);
         }

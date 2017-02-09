@@ -7,6 +7,7 @@ public class Kindergarden {
     String id;
     String name;
     String phone;
+    String serial;
 
     @Override
     public String toString() {

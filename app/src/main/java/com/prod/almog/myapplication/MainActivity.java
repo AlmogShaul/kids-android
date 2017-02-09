@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         ListenToKindergardensRef();
         selectedKindergarden = Helper.me().selectedKindergarden;
         Helper.me().context = this.getBaseContext();
+        TextView header = (TextView) findViewById(R.id.kindergarden_header);
+        header.setText(selectedKindergarden.name);
 
     }
 

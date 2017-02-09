@@ -57,6 +57,7 @@ public class WellcomActivity extends AppCompatActivity {
                                 kg.id = (String)pair.getKey();
                                 kg.name = (String)val.get("name");
                                 kg.phone = (String)val.get("phone");
+                                kg.serial = (String)val.get("simSerialNumber");
                                 kindergardens.add(kg);
                                 it.remove();
                             }
@@ -68,30 +69,8 @@ public class WellcomActivity extends AppCompatActivity {
                         }
 
 
-                        AutoCompleteTextView actv = (AutoCompleteTextView) findViewById(R.id.kg_auto_complete);
-                        KindergardenItemAdapter adapter = new KindergardenItemAdapter(getApplicationContext(), R.layout.kindergarden_item,kindergardens);
-                        actv.setAdapter(adapter);
-                        actv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        //setAutoComplete();
 
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                TextView tv = (TextView) view;
-                                String kindergardenName = tv.getText().toString();
-                                for (Kindergarden kg :kindergardens) {
-                                    if(kg.toString().equals(kindergardenName)) {
-                                        Helper.me().selectedKindergarden = kg;
-                                    }
-
-                                }
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                getApplicationContext().startActivity(intent);
-                            }
-                        });
-//                        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-//                        KindergardenItemAdapter customAdapter = new KindergardenItemAdapter(getApplicationContext(), R.layout.kindergarden_item,kindergardens);
-//                        customAdapter.setDropDownViewResource(R.layout.kindergarden_item);
-//                        spinner.setAdapter(customAdapter );
                     }
 
                     @Override
@@ -99,22 +78,51 @@ public class WellcomActivity extends AppCompatActivity {
                 });
     }
 
+    private void setAutoComplete() {
+//        AutoCompleteTextView actv = (AutoCompleteTextView) findViewById(R.id.kg_auto_complete);
+//        KindergardenItemAdapter adapter = new KindergardenItemAdapter(getApplicationContext(), R.layout.kindergarden_item,kindergardens);
+//        actv.setAdapter(adapter);
+//        actv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                TextView tv = (TextView) view;
+//                String kindergardenName = tv.getText().toString();
+//                for (Kindergarden kg :kindergardens) {
+//                    if(kg.toString().equals(kindergardenName)) {
+//                        Helper.me().selectedKindergarden = kg;
+//                    }
+//
+//                }
+//                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                getApplicationContext().startActivity(intent);
+//            }
+//        });
+    }
+
     private void MatchKindergardenByPhone() {
-        String phone = getDevicePhoneNumber();
+        String serial = getDevicePhoneNumber();
         for (Kindergarden kg :kindergardens) {
-            if(kg.phone.equals(phone)) {
+            if((kg.serial!=null)&&kg.serial.equals(serial)) {
                 Helper.me().selectedKindergarden = kg;
             }
         }
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        getApplicationContext().startActivity(intent);
+        if(Helper.me().selectedKindergarden == null) {
+            TextView textView = (TextView) findViewById(R.id.tv_match);
+            textView.setText("לא נמצאה התאמה");
+        }
+        else {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }
     }
 
     private String getDevicePhoneNumber() {
         TelephonyManager tMgr = (TelephonyManager)this.getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-        String mPhoneNumber = tMgr.getLine1Number();
-        return mPhoneNumber.replace("+972","0");
+        String serialNumber = tMgr.getSimSerialNumber();
+        return serialNumber;
     }
 
 

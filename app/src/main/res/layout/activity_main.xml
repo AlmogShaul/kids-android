@@ -6,7 +6,17 @@
     android:layoutDirection="rtl"
     tools:context="com.prod.almog.myapplication.MainActivity"
     android:orientation="vertical">
-
+    <TextView android:id="@+id/kindergarden_header"
+        android:text="גן ילדים"
+        android:gravity="center"
+        android:paddingRight="10px"
+        android:paddingLeft="10px"
+        android:layout_width="match_parent"
+        android:layout_height="200px"
+        android:background="@color/colorAccent"
+        android:textSize="100px"
+        android:textColor="@color/background_floating_material_light"
+        android:textAlignment="viewStart" />
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/kids_list_view"
         android:layoutDirection="ltr"

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "16965481247-jppdlti17jhq5a4e5162pvrgb04a27s2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.prod.almog.myapplication",
+            "certificate_hash": "FBC3DA0FF3D3075C43D8D3CE3FDC29BF327C563D"
+          }
+        },
+        {
           "client_id": "16965481247-h18qmccgvnll0jdhkje73jurtqe8peq3.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16965481247-h18qmccgvnll0jdhkje73jurtqe8peq3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

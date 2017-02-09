@@ -58,9 +58,9 @@ public class DebugScheduler {
             @Override
             public void run() {
                 clearKidExecutors();
-                if(!isHoliday()) {
-                    for (Kid kid : kids) {
-                        String name = kid.name;
+                for (Kid kid : kids) {
+                    kid.arrived = false;
+                    if (!isHoliday()) {
                         scheduleKidNotification(kid);
                     }
                 }
@@ -80,6 +80,7 @@ public class DebugScheduler {
     private void scheduleKidNotification(final Kid _kid){
         final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
         kidExecutors.add(executorService);
+
         Runnable run = new Runnable() {
             @Override
             public void run() {
@@ -143,7 +144,8 @@ public class DebugScheduler {
     }
 
     private void sendSMS(Kid kid) {
-        String message =kid.name +" לא הגיע היום לגן.";
+        String notifyMessage = Helper.me().settings.get("notifyMessage");
+        String message = String.format(notifyMessage, kid.name);
         String stopSMS = Helper.me().settings.get("stopSMS");
         if(stopSMS == null) stopSMS = "false";
         if(stopSMS.equals("true")){
@@ -152,6 +154,7 @@ public class DebugScheduler {
         else{
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
+            smsManager.sendTextMessage(kid.motherPhone, null, message, null, null);
         }
         kid.messageSent = true;
     }

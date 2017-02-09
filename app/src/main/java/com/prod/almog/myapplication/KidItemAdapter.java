@@ -75,7 +75,9 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
                     updateServer(kids.get(position));
                     if(kids.get(position).arrived == true)
                     {
-                        play(Helper.me().getRandomCongrat());
+                        byte[] congrat = Helper.me().getRandomCongrat();
+                        if(congrat !=null)
+                        play(congrat);
                     }
                 }
 
@@ -96,9 +98,9 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
 
     private void updateServer(Kid kid) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference kidsRef = databaseReference.child("kids");
+        DatabaseReference kidsRef = databaseReference.child("kids").child(kid.id);
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(kid.id ,kid);
+        childUpdates.put("arrived" ,kid.arrived);
         Task<Void> task = kidsRef.updateChildren(childUpdates);
     }
 

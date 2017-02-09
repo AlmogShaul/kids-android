@@ -80,12 +80,14 @@ public class Scheduler {
         executorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                if(!isHoliday()) {
-                    for (Kid kid : kids) {
+                clearKidExecutors();
+                for (Kid kid : kids) {
                         kid.arrived = false;
-                        scheduleKidNotification(kid);
+                        if (!isHoliday()) {
+                            scheduleKidNotification(kid);
+                        }
                     }
-                }
+
             }
         },0,1, TimeUnit.DAYS);
     }
@@ -157,11 +159,14 @@ public class Scheduler {
     }
 
     private void sendSMS(Kid kid) {
-        String message =kid.name +" לא הגיע היום לגן.";
+        String notifyMessage = Helper.me().settings.get("notifyMessage");
+        String message = String.format(notifyMessage, kid.name);
         String stopSMS = Helper.me().settings.get("stopSMS");
         if(stopSMS == null) stopSMS = "false";
         if(stopSMS.equals("true")) {
             smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
+            smsManager.sendTextMessage(kid.motherPhone, null, message, null, null);
+
         }
         kid.messageSent = true;
     }

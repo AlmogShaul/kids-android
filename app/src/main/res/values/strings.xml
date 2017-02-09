@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">KIDS</string>
+    <string name="app_name">גנים</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="kindergarden">גן אנפה</string>
     <string name="arrived">הגיע</string>
     <string name="missing">חסר</string>
+    <string name="looking_for_kindergaren">מחפש התאמה</string>
 </resources>

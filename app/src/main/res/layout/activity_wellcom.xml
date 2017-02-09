@@ -10,18 +10,21 @@
     tools:context="com.prod.almog.myapplication.WellcomActivity">
 
 
-    <AutoCompleteTextView
-        android:id="@+id/kg_auto_complete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="65dp"
-        android:ems="10" />
+    <!--<AutoCompleteTextView-->
+        <!--android:id="@+id/kg_auto_complete"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="65dp"-->
+        <!--android:ems="10" />-->
+
+<TextView
+    android:id="@+id/tv_match"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:text="@string/looking_for_kindergaren" />
 
 
-    <!--<Spinner-->
-        <!--android:id="@+id/spinner"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
 </RelativeLayout>
