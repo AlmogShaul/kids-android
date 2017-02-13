@@ -31,6 +31,7 @@ public class DebugScheduler {
     private DebugScheduler(){}
     private ArrayList<Kid> kids = new ArrayList<>();
     private ArrayList<Date> holidays = new ArrayList<>();
+    private Boolean dayZero = true;
 
     public void start(ArrayList<Kid> _kids,ArrayList<Date> _holidays){
         kids = new ArrayList<>();
@@ -59,13 +60,16 @@ public class DebugScheduler {
             public void run() {
                 clearKidExecutors();
                 for (Kid kid : kids) {
-                    kid.arrived = false;
+                    if (dayZero == false) {
+                        kid.arrived = false;
+                    }
                     if (!isHoliday()) {
                         scheduleKidNotification(kid);
                     }
                 }
+                dayZero = false;
             }
-        },0,1, TimeUnit.DAYS);
+        },1,1, TimeUnit.DAYS);
     }
 
     private void clearKidExecutors() {

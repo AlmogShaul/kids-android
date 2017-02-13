@@ -32,7 +32,7 @@ public class Scheduler {
         return instance;
     }
     private ArrayList<Date> holidays = new ArrayList<>();
-
+    private Boolean dayZero = true;
     private Scheduler(){}
 
     SmsManager smsManager = SmsManager.getDefault();
@@ -82,14 +82,16 @@ public class Scheduler {
             public void run() {
                 clearKidExecutors();
                 for (Kid kid : kids) {
+                    if (dayZero == false) {
                         kid.arrived = false;
-                        if (!isHoliday()) {
-                            scheduleKidNotification(kid);
-                        }
                     }
-
+                    if (!isHoliday()) {
+                        scheduleKidNotification(kid);
+                    }
+                }
+                dayZero = false;
             }
-        },0,1, TimeUnit.DAYS);
+        },1,1, TimeUnit.DAYS);
     }
 
     private ArrayList<ScheduledExecutorService> kidExecutors = new ArrayList<ScheduledExecutorService>();
