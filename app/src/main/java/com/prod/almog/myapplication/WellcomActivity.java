@@ -28,13 +28,28 @@ import java.util.Map;
 
 public class WellcomActivity extends AppCompatActivity {
 
+
     private DatabaseReference databaseReference;
     private List<Kindergarden> kindergardens = new ArrayList<Kindergarden>();
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+
+        super.onWindowFocusChanged(hasFocus);
+
+        if(hasFocus)
+            init();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        init();
+    }
+
+    private void init() {
         setContentView(R.layout.activity_wellcom);
+        Helper.me().context = this.getBaseContext();
         getKindergardens();
     }
 

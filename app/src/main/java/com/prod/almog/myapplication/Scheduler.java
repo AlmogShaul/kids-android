@@ -41,7 +41,6 @@ public class Scheduler {
     public void start(ArrayList<Kid> _kids,ArrayList<Date> _holidays){
         holidays.addAll(_holidays);
         kids.addAll(_kids);
-        startSchedule();
     }
 
     private boolean isHoliday() {
@@ -84,6 +83,7 @@ public class Scheduler {
                 for (Kid kid : kids) {
                     if (dayZero == false) {
                         kid.arrived = false;
+                        kid.absentConfirmed = false;
                     }
                     if (!isHoliday()) {
                         scheduleKidNotification(kid);
@@ -125,7 +125,7 @@ public class Scheduler {
     }
 
     private boolean willSendSMS(Kid _kid,boolean timePassed){
-        return !_kid.arrived && timePassed && !_kid.messageSent;
+        return !_kid.arrived && !_kid.absentConfirmed && timePassed ;
     }
 
     private boolean isTimePassed(Kid _kid) {

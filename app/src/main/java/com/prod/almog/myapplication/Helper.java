@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,9 +46,14 @@ public class Helper {
     private FirebaseStorage firebaseStorage;
     Calendar c = Calendar.getInstance();
     private Activity activity;
-    public void setActivity(Activity _activity){
+    public ArrayList<String> stopSendingSMSNumbers = new ArrayList<>();
+    public Alarm alarm;
+
+
+    public void setActivity(Activity _activity) {
         activity = _activity;
     }
+
     private static Helper instance = null;
     private ArrayList<Kid> kids = new ArrayList<>();
     public Context context;
@@ -56,7 +62,6 @@ public class Helper {
     public void setKids(ArrayList<Kid> kids) {
         this.kids = kids;
         String debugMode = Helper.me().settings.get("debugMode");
-
         ArrayList<Date> holidays = new ArrayList<>();
         String _holidays = settings.get("holidays");
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -71,14 +76,18 @@ public class Helper {
         }
         if (debugMode != null && debugMode.toLowerCase().equals("true")) {
             DebugScheduler.me().start(kids, holidays);
+            DebugScheduler.me().clearWorkers();
+            DebugScheduler.me().startSchedule();
         } else {
+            //TODO: need to fix the read scheduler
             Scheduler.me().start(kids, holidays);
+
         }
 
     }
 
     public static Helper me() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new Helper();
         }
         return instance;
@@ -110,9 +119,9 @@ public class Helper {
         });
     }
 
-    public HashMap<String,String> settings = new HashMap<>();
+    public HashMap<String, String> settings = new HashMap<>();
 
-    private void getSettings(){
+    private void getSettings() {
 
         settingsRef.addValueEventListener(
                 new ValueEventListener() {
@@ -124,13 +133,11 @@ public class Helper {
                             Iterator it = list.entrySet().iterator();
                             while (it.hasNext()) {
                                 Map.Entry pair = (Map.Entry) it.next();
-                                if(pair.getValue() instanceof Boolean)
-                                {
+                                if (pair.getValue() instanceof Boolean) {
                                     Boolean pairValue = (Boolean) pair.getValue();
-                                    settings.put((String)pair.getKey(),pairValue.toString());
-                                }
-                                else{
-                                    settings.put((String)pair.getKey(),(String)pair.getValue());
+                                    settings.put((String) pair.getKey(), pairValue.toString());
+                                } else {
+                                    settings.put((String) pair.getKey(), (String) pair.getValue());
                                 }
                                 it.remove();
                             }
@@ -149,17 +156,19 @@ public class Helper {
     }
 
     private void decideIfRestart() {
-        String restart =settings.get("restart");
-        if(restart!=null && restart.equals("true"))
-        {
-            DebugScheduler.me().clearWorkers();
-            if(context!=null){
-                Intent i = context.getPackageManager()
-                        .getLaunchIntentForPackage( context.getPackageName() );
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                context.startActivity(i);
-            }
+        String restart = settings.get("restart");
+        if (restart != null && restart.equals("true")) {
+            restart();
 
+        }
+    }
+
+    public void restart() {
+        DebugScheduler.me().clearWorkers();
+        if (context != null) {
+            Intent i = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(i);
         }
     }
 
@@ -167,7 +176,7 @@ public class Helper {
     private void mapCongratFiles() {
         String congratsFilesStr = settings.get("congratsFiles");
         String[] congratsFiles;
-        if(congratsFilesStr!=null){
+        if (congratsFilesStr != null) {
             congratsFiles = congratsFilesStr.split(";");
             for (String file : congratsFiles) {
                 getAudioFileToMap(file);
@@ -177,22 +186,74 @@ public class Helper {
 
     public byte[] getRandomCongrat() {
         Set<String> keys = Helper.me().congrats.keySet();
-        if(keys !=null && keys.size() > 0) {
+        if (keys != null && keys.size() > 0) {
             Integer randomAccessNumber = new Random().nextInt(keys.size());
             return Helper.me().congrats.get(keys.toArray()[randomAccessNumber]);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
 
     public void toast(final String message) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+
+        if(activity!=null){
+            activity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+
+    }
+
+
+    public void updateServer(Kid kid) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference kidsRef = databaseReference.child("kids").child(kid.id);
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("arrived", kid.arrived);
+        childUpdates.put("absentConfirmed",kid.absentConfirmed);
+        kidsRef.updateChildren(childUpdates);
+
+    }
+
+    public void clearEntrances() {
+
+        DebugScheduler.me().clearEntrances();
+    }
+
+    public void startSchedule() {
+        DebugScheduler.me().startSchedule();
+    }
+
+    public String getShortPhoneNum(String senderNum) {
+        Integer rawLength = senderNum.length();
+        return "0" + senderNum.substring(rawLength - 9);
+    }
+
+    public void clearStopSendingList() {
+        stopSendingSMSNumbers.clear();
+    }
+
+    public void confirmAbsent(String shortPhoneNum) {
+        changeConformStatus(shortPhoneNum,true);
+
+    }
+
+    private void changeConformStatus(String shortPhoneNum,Boolean status) {
+        for (Kid kid:kids) {
+            if((kid.fatherPhone.equals(shortPhoneNum)) || (kid.fatherPhone.equals(shortPhoneNum)))
+            {
+                kid.absentConfirmed = status;
+                updateServer(kid);
             }
-        });
+        }
+    }
+
+    public void clearConfirmAbsent(String shortPhoneNum) {
+        changeConformStatus(shortPhoneNum,false);
 
     }
 }

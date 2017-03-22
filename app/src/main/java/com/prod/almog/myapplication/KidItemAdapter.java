@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
         super(context, resource, items);
         kids = items;
     }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -72,7 +74,7 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
                     final int position = gridView.getPositionForView(parentRow);
                     kids.get(position).arrived =  !kids.get(position).arrived;
                     SetToggleButtonColor(view, position);
-                    updateServer(kids.get(position));
+                    Helper.me().updateServer(kids.get(position));
                     if(kids.get(position).arrived == true)
                     {
                         byte[] congrat = Helper.me().getRandomCongrat();
@@ -88,7 +90,8 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
             byte[] pic = Helper.me().kidPicsMap.get(kid.id);
                 if((pic != null) && (pic.length != 0)) {
                     Bitmap bmp = BitmapFactory.decodeByteArray(pic, 0, pic.length);
-                    image_view.setImageBitmap(bmp);
+                    Bitmap resized = Bitmap.createScaledBitmap(bmp, 200, 200, true);
+                    image_view.setImageBitmap(resized);
                 }
 
         }
@@ -96,19 +99,22 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
         return v;
     }
 
-    private void updateServer(Kid kid) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference kidsRef = databaseReference.child("kids").child(kid.id);
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("arrived" ,kid.arrived);
-        Task<Void> task = kidsRef.updateChildren(childUpdates);
-    }
+
 
     private void SetToggleButtonColor(View view, int position) {
         if((kids.get(position).arrived != null) && (kids.get(position).arrived  == true))
             view.setBackgroundColor(Color.GREEN);
-        else
-            view.setBackgroundColor(Color.LTGRAY);
+        else {
+
+            if(kids.get(position).absentConfirmed == true)
+            {
+                view.setBackgroundColor(Color.YELLOW);
+            }
+            else{
+                view.setBackgroundColor(Color.LTGRAY);
+            }
+
+        }
     }
 
 
