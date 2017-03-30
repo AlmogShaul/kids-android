@@ -218,10 +218,12 @@ public class MainActivity extends AppCompatActivity {
         StorageReference pathReference = storageRef.child(kidId + ".png");
         final long ONE_MEGABYTE = 3024 * 3024;
         pathReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+
+            String copiedKidId = kidId;
             @Override
             public void onSuccess(byte[] bytes) {
 
-                Helper.me().kidPicsMap.put(kidId, bytes);
+                Helper.me().kidPicsMap.put(copiedKidId, bytes);
                 updateList();
 
             }

@@ -57,7 +57,6 @@ public class Helper {
     private static Helper instance = null;
     private ArrayList<Kid> kids = new ArrayList<>();
     public Context context;
-    DatabaseReference settingsRef;
 
     public void setKids(ArrayList<Kid> kids) {
         this.kids = kids;
@@ -96,10 +95,9 @@ public class Helper {
     private Helper() {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseStorage = FirebaseStorage.getInstance();
-        settingsRef = databaseReference.child("settings");
 
         storageRef = firebaseStorage.getReferenceFromUrl("gs://kids-f5aa3.appspot.com");
-        getSettings();
+
     }
 
     private void getAudioFileToMap(final String audioFile) {
@@ -121,39 +119,7 @@ public class Helper {
 
     public HashMap<String, String> settings = new HashMap<>();
 
-    private void getSettings() {
 
-        settingsRef.addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        HashMap list = (HashMap) dataSnapshot.getValue();
-                        if (list == null) return;
-                        try {
-                            Iterator it = list.entrySet().iterator();
-                            while (it.hasNext()) {
-                                Map.Entry pair = (Map.Entry) it.next();
-                                if (pair.getValue() instanceof Boolean) {
-                                    Boolean pairValue = (Boolean) pair.getValue();
-                                    settings.put((String) pair.getKey(), pairValue.toString());
-                                } else {
-                                    settings.put((String) pair.getKey(), (String) pair.getValue());
-                                }
-                                it.remove();
-                            }
-
-                        } catch (Exception e) {
-                            e.toString();
-                        }
-                        mapCongratFiles();
-                        decideIfRestart();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-    }
 
     private void decideIfRestart() {
         String restart = settings.get("restart");

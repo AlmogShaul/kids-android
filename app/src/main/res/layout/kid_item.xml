@@ -33,7 +33,7 @@
         android:layout_height="20dp"
         android:textAlignment="center"
         android:background="@color/primary_material_light"
-        android:textSize="20dp"
+        android:textSize="16dp"
         android:text="שם"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="75dp"        />
