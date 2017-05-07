@@ -28,14 +28,12 @@ public class IncomingSms extends BroadcastReceiver {
 
                     String senderNum = phoneNumber;
                     String message = currentMessage.getDisplayMessageBody();
-                    String shortPhoneNum=Helper.me().getShortPhoneNum(senderNum);
+                    String shortPhoneNum=Manager.me().getShortPhoneNum(senderNum);
                     if(message.equals("1")){
-                        Helper.me().stopSendingSMSNumbers.add(shortPhoneNum);
-                        Helper.me().confirmAbsent(shortPhoneNum);
+                        Manager.me().confirmAbsent(shortPhoneNum);
                     }
                     if(message.equals("2")){
-                        Helper.me().stopSendingSMSNumbers.remove(shortPhoneNum);
-                        Helper.me().clearConfirmAbsent(shortPhoneNum);
+                        Manager.me().clearConfirmAbsent(shortPhoneNum);
                     }
 
 
@@ -43,7 +41,7 @@ public class IncomingSms extends BroadcastReceiver {
             } // bundle is null
 
         } catch (Exception e) {
-            Log.e("SmsReceiver", "Exception smsReceiver" +e);
+            Manager.me().log("ERROR", "שגיאה בקבלת SMS"+e.getMessage());
 
         }
     }

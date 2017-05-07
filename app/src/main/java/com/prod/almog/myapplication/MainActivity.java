@@ -16,6 +16,7 @@ import android.widget.ToggleButton;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,13 +32,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.ConsoleHandler;
+
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,80 +62,51 @@ public class MainActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseStorage = FirebaseStorage.getInstance();
         kidsRef = databaseReference.child("kids");
-        Helper.me().setActivity(this);
+        Manager.me().setActivity(this);
+        Manager.me().setActivity(this);
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Helper.me().toast("בודק");
+        Manager.me().toast("בודק");
+        Manager.me().log("INFO","בודק");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
-        ListenToKindergardensRef();
-        ListenToKidsRef();
-        selectedKindergarden = Helper.me().selectedKindergarden;
-        if(selectedKindergarden==null){
-            Helper.me().restart();
-        }
-
-        else {
+        getKids();
+        scheduleUpdate();
+        selectedKindergarden = Manager.me().getSelectedKindergarden();
+        if (selectedKindergarden == null) {
+            Manager.me().log("INFO","מאתחל לאחר שלא נמצא גן ילדים");
+            Manager.me().restart();
+        } else {
             TextView header = (TextView) findViewById(R.id.kindergarden_header);
             header.setText(selectedKindergarden.name);
         }
-        startService(new Intent(this, ScheduleService.class));
 
     }
-    GridView yourListView ;
-    private void ListenToKidsRef() {
+
+    private void scheduleUpdate() {
+        final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+        executorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                getKids();
+            }
+        }, 0, 1, TimeUnit.MINUTES);
+
+    }
+
+    GridView yourListView;
+
+    private void UpdateKidsViewAdapter() {
 
         yourListView = (GridView) findViewById(R.id.kids_list_view);
         customAdapter = new KidItemAdapter(getApplicationContext(), R.layout.kid_item, kids);
         yourListView.setAdapter(customAdapter);
+        updateList();
 
-        kidsRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                //no need to , the kindergarden func create new listener to get the new added child
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                updateKid(dataSnapshot);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        kidsRef.addValueEventListener(
-                new ValueEventListener() {
-                    boolean initialized = false;
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(initialized == false) {
-                            updateKids(dataSnapshot);
-                            initialized = true;
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
     }
 
     private void updateKid(DataSnapshot dataSnapshot) {
@@ -143,15 +121,15 @@ public class MainActivity extends AppCompatActivity {
             kid.motherPhone = (String) list.get("motherPhone");
             kid.fatherPhone = (String) list.get("fatherPhone");
             kid.reminderTime = (String) list.get("reminderTime");
-            kid.arrived = (Boolean)list.get("arrived");
-            kid.absentConfirmed = (Boolean)list.get("absentConfirmed");
+            kid.arrived = (Boolean) list.get("arrived");
+            kid.absentConfirmed = (Boolean) list.get("absentConfirmed");
 
-            if(kid.absentConfirmed == null) kid.absentConfirmed = false;
+            if (kid.absentConfirmed == null) kid.absentConfirmed = false;
             if (kid.arrived == null) kid.arrived = false;
 
 
-            for (int i=0;i<kids.size();i++){
-                if(kids.get(i).id.equals(kid.id)){
+            for (int i = 0; i < kids.size(); i++) {
+                if (kids.get(i).id.equals(kid.id)) {
                     kids.remove(i);
                 }
             }
@@ -197,12 +175,6 @@ public class MainActivity extends AppCompatActivity {
                 it.remove();
             }
 
-            storageRef = firebaseStorage.getReferenceFromUrl("gs://kids-f5aa3.appspot.com");
-
-            for (Kid kid : kids) {
-                getPicByKidsId(kid.id);
-            }
-
             updateList();
 
 
@@ -211,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    
+
     private void getPicByKidsId(final String kidId) {
 
         // Create a reference with an initial file path and name
@@ -220,12 +192,11 @@ public class MainActivity extends AppCompatActivity {
         pathReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
 
             String copiedKidId = kidId;
+
             @Override
             public void onSuccess(byte[] bytes) {
-
-                Helper.me().kidPicsMap.put(copiedKidId, bytes);
-                updateList();
-
+                Manager.me().kidPicsMap.put(copiedKidId, bytes);
+                customAdapter.notifyDataSetChanged();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -235,66 +206,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-    }
-
-    private void ListenToKindergardensRef() {
-        DatabaseReference kindergardensRef = databaseReference.child("kindergardens");
-        kindergardensRef.addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        kinderGardenKidsIds.clear();
-                        HashMap list = (HashMap) dataSnapshot.getValue();
-                        if (list == null) return;
-                        try {
-                            Iterator it = list.entrySet().iterator();
-                            while (it.hasNext()) {
-                                Map.Entry pair = (Map.Entry) it.next();
-                                HashMap val = (HashMap) pair.getValue();
-
-                                if (val.get("name").equals(selectedKindergarden.name)) {
-                                    HashMap rawKids = (HashMap) val.get("kids");
-                                    Iterator _it = rawKids.entrySet().iterator();
-                                    while (_it.hasNext()) {
-                                        Map.Entry _pair = (Map.Entry) _it.next();
-                                        String kidKey = (String) _pair.getKey();
-                                        boolean kidVal = (boolean) _pair.getValue();
-                                        if (kidVal == true) kinderGardenKidsIds.add(kidKey);
-                                        _it.remove();
-                                    }
-
-                                    kidsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            updateKids(dataSnapshot);
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                }
-                                it.remove();
-                            }
-
-                        } catch (Exception e) {
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-    }
-
-
-    private void updateKidsList(ArrayList<String> kinderGardenKidsIds) {
-        for (String kidId : kinderGardenKidsIds) {
-
-        }
     }
 
     @NonNull
@@ -308,12 +219,49 @@ public class MainActivity extends AppCompatActivity {
         kid.motherPhone = (String) rawKid.get("motherPhone");
         kid.fatherPhone = (String) rawKid.get("fatherPhone");
         kid.reminderTime = (String) rawKid.get("reminderTime");
-        kid.arrived = (Boolean)rawKid.get("arrived");
-        kid.absentConfirmed = (Boolean)rawKid.get("absentConfirmed");
-        if(kid.absentConfirmed == null) kid.absentConfirmed = false;
+        kid.arrived = (Boolean) rawKid.get("arrived");
+        kid.absentConfirmed = (Boolean) rawKid.get("absentConfirmed");
+        if (kid.absentConfirmed == null) kid.absentConfirmed = false;
         if (kid.arrived == null) kid.arrived = false;
         return kid;
     }
 
 
+    public void getKids() {
+
+        FirebaseService fb = new FirebaseService();
+        fb.getKids(new IResult<ArrayList<Kid>>() {
+            @Override
+            public void accept(ArrayList<Kid> _kids) {
+
+                kids = _kids;
+                selectedKindergarden = Manager.me().getSelectedKindergarden();
+                TextView header = (TextView) findViewById(R.id.kindergarden_header);
+                header.setText(selectedKindergarden.name);
+
+                storageRef = firebaseStorage.getReferenceFromUrl("gs://kids-f5aa3.appspot.com");
+
+                if(HourPassed()) {
+                    for (Kid kid : kids) {
+                        Manager.me().log("INFO","מעדכן תמונות ילדים");
+                        getPicByKidsId(kid.id);
+                    }
+                }
+
+                UpdateKidsViewAdapter();
+            }
+        });
+    }
+
+    private Integer lastRecHour = 0;
+    private boolean HourPassed() {
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if(hour != lastRecHour ){
+            lastRecHour = hour;
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }

@@ -161,9 +161,9 @@ public class Scheduler {
     }
 
     private void sendSMS(Kid kid) {
-        String notifyMessage = Helper.me().settings.get("notifyMessage");
+        String notifyMessage = Manager.me().settings.get("notifyMessage");
         String message = String.format(notifyMessage, kid.name);
-        String stopSMS = Helper.me().settings.get("stopSMS");
+        String stopSMS = Manager.me().settings.get("stopSMS");
         if(stopSMS == null) stopSMS = "false";
         if(stopSMS.equals("true")) {
             smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);

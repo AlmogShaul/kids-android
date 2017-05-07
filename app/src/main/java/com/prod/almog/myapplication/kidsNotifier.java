@@ -5,17 +5,16 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
+import android.telephony.SmsManager;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 
-public class Boot extends BroadcastReceiver {
+public class KidsNotifier  {
 
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-
-    }
 
 
 }

@@ -74,10 +74,10 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
                     final int position = gridView.getPositionForView(parentRow);
                     kids.get(position).arrived =  !kids.get(position).arrived;
                     SetToggleButtonColor(view, position);
-                    Helper.me().updateServer(kids.get(position));
+                    Manager.me().updateServer(kids.get(position));
                     if(kids.get(position).arrived == true)
                     {
-                        byte[] congrat = Helper.me().getRandomCongrat();
+                        byte[] congrat = Manager.me().getRandomCongrat();
                         if(congrat !=null)
                         play(congrat);
                     }
@@ -87,7 +87,7 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
 
                 name_text.setText(kid.name);
 
-            byte[] pic = Helper.me().kidPicsMap.get(kid.id);
+            byte[] pic = Manager.me().kidPicsMap.get(kid.id);
                 if((pic != null) && (pic.length != 0)) {
                     Bitmap bmp = BitmapFactory.decodeByteArray(pic, 0, pic.length);
                     Bitmap resized = Bitmap.createScaledBitmap(bmp, 200, 200, true);

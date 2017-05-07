@@ -49,8 +49,28 @@ public class WellcomActivity extends AppCompatActivity {
 
     private void init() {
         setContentView(R.layout.activity_wellcom);
-        Helper.me().context = this.getBaseContext();
-        getKindergardens();
+        startService(new Intent(this, ScheduleService.class));
+        startService(new Intent(this, KidsNotifierService.class));
+
+        Manager.me().context = this.getBaseContext();
+        FirebaseService fb = new FirebaseService();
+        fb.getKids(new IResult<ArrayList<Kid>>() {
+            @Override
+            public void accept(ArrayList<Kid> kids) {
+
+                if(Manager.me().getSelectedKindergarden() == null) {
+                    TextView textView = (TextView) findViewById(R.id.tv_match);
+                    textView.setText("לא נמצאה התאמה");
+                }
+                else {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(intent);
+                }
+
+                Manager.me().setKids(kids);
+            }
+        });
     }
 
 
@@ -105,7 +125,7 @@ public class WellcomActivity extends AppCompatActivity {
 //                String kindergardenName = tv.getText().toString();
 //                for (Kindergarden kg :kindergardens) {
 //                    if(kg.toString().equals(kindergardenName)) {
-//                        Helper.me().selectedKindergarden = kg;
+//                        Manager.me().selectedKindergarden = kg;
 //                    }
 //
 //                }
@@ -120,10 +140,10 @@ public class WellcomActivity extends AppCompatActivity {
         String serial = getDevicePhoneNumber();
         for (Kindergarden kg :kindergardens) {
             if((kg.serial!=null)&&kg.serial.equals(serial)) {
-                Helper.me().selectedKindergarden = kg;
+                Manager.me().setSelectedKindergarden(kg);
             }
         }
-        if(Helper.me().selectedKindergarden == null) {
+        if(Manager.me().getSelectedKindergarden() == null) {
             TextView textView = (TextView) findViewById(R.id.tv_match);
             textView.setText("לא נמצאה התאמה");
         }
