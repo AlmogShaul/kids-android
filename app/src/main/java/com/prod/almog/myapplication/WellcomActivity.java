@@ -100,7 +100,6 @@ public class WellcomActivity extends AppCompatActivity {
 
                         }
                         catch(Exception e){
-                            e.toString();
                         }
 
 

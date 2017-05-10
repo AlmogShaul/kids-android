@@ -73,7 +73,6 @@ public class FirebaseService {
                             }
                         } catch (Exception e) {
                             Manager.me().log("ERROR", "שגיאה במציאת הגדרות"+e.getMessage());
-                            e.toString();
                         }
                         Settings.accept(settings);
 
@@ -122,7 +121,6 @@ public class FirebaseService {
                             result.accept(kindergardens);
                         } catch (Exception e) {
                             Manager.me().log("ERROR", "שגיאה במציאת גנים"+e.getMessage());
-                            e.toString();
                         }
 
 
@@ -213,8 +211,6 @@ public class FirebaseService {
 
         } catch (Exception e) {
             Manager.me().log("ERROR", "שגיאה בעדכון הילד מהשרת"+e.getMessage());
-
-            e.toString();
         }
 
     }

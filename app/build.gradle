@@ -8,7 +8,7 @@ android {
         applicationId "com.prod.almog.myapplication"
         minSdkVersion 9
         targetSdkVersion 22
-        versionCode 19
+        versionCode 21
 
         versionName "1.0"
     }

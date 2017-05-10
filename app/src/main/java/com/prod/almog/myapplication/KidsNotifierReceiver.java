@@ -52,7 +52,7 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
 
         firebaseService.getSettings(new IResult<HashMap<String, String>>() {
             @Override
@@ -60,6 +60,7 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
                 settings = stringStringHashMap;
                 parseHolidays();
                 if (!isHoliday()) {
+                    Manager.me().setContext(context);
                     firebaseService.getKids(new IResult<ArrayList<Kid>>() {
                         @Override
                         public void accept(ArrayList<Kid> kids) {

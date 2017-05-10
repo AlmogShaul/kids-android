@@ -97,7 +97,6 @@ public class Manager {
         try {
             smsManager.sendTextMessage(target, null, message, null, null);
         } catch (Exception e) {
-            e.toString();
         }
     }
 
@@ -253,6 +252,9 @@ public class Manager {
         String kindergarden = "";
         if (selectedKindergarden != null)
             kindergarden = selectedKindergarden.name;
+        else
+            kindergarden = getDevicePhoneNumber();
+
         String time = Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + "-" +
                 (Calendar.getInstance().get(Calendar.MONTH)+1) + "  " +
                 Calendar.getInstance().get(Calendar.HOUR) +":" +

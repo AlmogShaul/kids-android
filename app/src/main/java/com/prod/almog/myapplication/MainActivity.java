@@ -63,13 +63,13 @@ public class MainActivity extends AppCompatActivity {
         firebaseStorage = FirebaseStorage.getInstance();
         kidsRef = databaseReference.child("kids");
         Manager.me().setActivity(this);
-        Manager.me().setActivity(this);
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Manager.me().setContext(this);
         Manager.me().toast("בודק");
         Manager.me().log("INFO","בודק");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         } catch (Exception e) {
-            e.toString();
         }
 
     }
@@ -179,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         } catch (Exception e) {
-            e.toString();
         }
     }
 
