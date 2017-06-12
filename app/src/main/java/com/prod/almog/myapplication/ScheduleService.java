@@ -48,7 +48,6 @@ public class ScheduleService extends Service {
     AlarmManager am;
 
     public void setAlarm(Context context) {
-        Toast.makeText(context, "בודק תזמון", Toast.LENGTH_SHORT).show();
         if (am == null) {
             Toast.makeText(context, "מאתחל תזמון", Toast.LENGTH_SHORT).show();
             Calendar calendar = Calendar.getInstance();

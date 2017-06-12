@@ -30,13 +30,13 @@
     <TextView android:textColor="#000000"
         android:id="@+id/name"
         android:layout_width="80dp"
-        android:layout_height="20dp"
+        android:layout_height="40dp"
         android:textAlignment="center"
         android:background="@color/primary_material_light"
         android:textSize="16dp"
         android:text="שם"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="75dp"        />
+        android:layout_marginTop="55dp"        />
 
 
 

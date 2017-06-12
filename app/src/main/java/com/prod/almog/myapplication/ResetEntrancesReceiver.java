@@ -19,6 +19,7 @@ public class ResetEntrancesReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        Manager.me().setContext(context);
         Manager.me().log("INFO", "שעה נבדקת לאיפוס" + String.valueOf(hour));
         FirebaseService fb = new FirebaseService();
         fb.getSettings(new IResult<HashMap<String, String>>() {

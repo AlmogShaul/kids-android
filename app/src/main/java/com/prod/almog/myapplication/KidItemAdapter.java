@@ -1,6 +1,7 @@
 package com.prod.almog.myapplication;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -94,7 +95,7 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
                     image_view.setImageBitmap(resized);
                 }
             else{
-                    Drawable face = this.getContext().getResources().getDrawable(R.drawable.kid_face);
+                    Drawable face = this.getContext().getResources().getDrawable(R.drawable.kid_face,null);
                     image_view.setImageDrawable(face);
 //                    image_view.setImageBitmap(Drawable.createFromResourceStream(R.drawable.kid_face));
 

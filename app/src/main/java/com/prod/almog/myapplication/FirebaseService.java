@@ -113,9 +113,7 @@ public class FirebaseService {
                                     kindergardens.add(kg);
                                     it.remove();
                                 } catch (Exception e1) {
-                                    if (Manager.me().settings.get("debugMode").toLowerCase().equals("true")) {
-                                        Manager.me().settings.get("debugMode");
-                                    }
+
                                 }
                             }
                             result.accept(kindergardens);
@@ -142,8 +140,13 @@ public class FirebaseService {
             @Override
             public void accept(HashSet<Kindergarden> kindergardens) {
                 Kindergarden kindergarden = MatchKindergardenByPhone();
-                Manager.me().setSelectedKindergarden(kindergarden);
+                if(kindergarden == null) {
+                    Manager.me().log("ERROR", "Cant find kindergarden");
+                    return;
+                }
 
+
+                Manager.me().setSelectedKindergarden(kindergarden);
                 for (Kindergarden kg : kindergardens) {
 
                     if (kg.id.equals(kindergarden.id)) {

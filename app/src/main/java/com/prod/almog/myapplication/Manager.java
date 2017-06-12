@@ -1,11 +1,15 @@
 package com.prod.almog.myapplication;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -15,8 +19,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -46,6 +52,7 @@ public class Manager {
     DatabaseReference logsRef;
 
     long id = 0;
+    public int lastRecDay = 0;
 
     private Manager() {
         id = Calendar.getInstance().getTimeInMillis();
@@ -107,6 +114,7 @@ public class Manager {
     }
 
     public void setSelectedKindergarden(Kindergarden kg) {
+
         selectedKindergarden = kg;
     }
 
@@ -252,12 +260,15 @@ public class Manager {
         String kindergarden = "";
         if (selectedKindergarden != null)
             kindergarden = selectedKindergarden.name;
-        else
-            kindergarden = getDevicePhoneNumber();
-
+        else {
+            try{
+                kindergarden = getDevicePhoneNumber();
+            }
+            catch(Exception e1){  }
+        }
         String time = Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + "-" +
                 (Calendar.getInstance().get(Calendar.MONTH)+1) + "  " +
-                Calendar.getInstance().get(Calendar.HOUR) +":" +
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY) +":" +
                 Calendar.getInstance().get(Calendar.MINUTE) +":" +
                 Calendar.getInstance().get(Calendar.SECOND) +":" +
                 Calendar.getInstance().get(Calendar.MILLISECOND);
@@ -267,5 +278,32 @@ public class Manager {
     public void clearConfirmAbsent(String shortPhoneNum) {
         changeConfirmStatus(shortPhoneNum, false);
 
+    }
+
+
+    public void darkScreen(){
+        ContentResolver cResolver;
+        Window window;
+        cResolver = context.getContentResolver();
+        window = activity.getWindow();
+        // To handle the auto
+        Settings.System.putInt(cResolver,Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+        Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, 0);
+        WindowManager.LayoutParams layoutpars = window.getAttributes();
+        layoutpars.screenBrightness = 0;
+        window.setAttributes(layoutpars);
+    }
+
+    public void lightScreen() {
+        ContentResolver cResolver;
+        Window window;
+        cResolver = context.getContentResolver();
+        window = activity.getWindow();
+        // To handle the auto
+        Settings.System.putInt(cResolver,Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+        Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, 255);
+        WindowManager.LayoutParams layoutpars = window.getAttributes();
+        layoutpars.screenBrightness = 255f;
+        window.setAttributes(layoutpars);
     }
 }

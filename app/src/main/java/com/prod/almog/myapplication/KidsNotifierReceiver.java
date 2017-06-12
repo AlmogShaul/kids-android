@@ -45,7 +45,7 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
                 try {
                     holidays.add(formatter.parse(item));
                 } catch (ParseException e) {
-                    Manager.me().log("ERROR", "שגיאה בקבלת החופשות" + e.getMessage());
+                    Manager.me().log("ERROR", "שגיאה בניתוח יום חופשה" + e.getMessage());
                 }
             }
         }
@@ -53,6 +53,7 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
+        Manager.me().setContext(context);
 
         firebaseService.getSettings(new IResult<HashMap<String, String>>() {
             @Override
@@ -60,7 +61,7 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
                 settings = stringStringHashMap;
                 parseHolidays();
                 if (!isHoliday()) {
-                    Manager.me().setContext(context);
+
                     firebaseService.getKids(new IResult<ArrayList<Kid>>() {
                         @Override
                         public void accept(ArrayList<Kid> kids) {
