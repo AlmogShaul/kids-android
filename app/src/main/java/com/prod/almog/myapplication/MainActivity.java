@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                        if (isHoliday(holidays)) {
+                        if (isHoliday(holidays) || Manager.me().passesWorkingHours()) {
                             Manager.me().darkScreen();
                         }else{
                             Manager.me().lightScreen();
