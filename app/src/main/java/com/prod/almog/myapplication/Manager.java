@@ -23,6 +23,7 @@ import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -84,6 +85,47 @@ public class Manager {
 
             }
         });
+    }
+
+
+    public boolean passesWorkingHours() {
+        Date date = new Date();   // given date
+        Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+        calendar.setTime(date);   // assigns calendar to given date
+
+        int year = calendar.get(Calendar.YEAR);
+        int month= calendar.get(Calendar.MONTH);
+        int day= calendar.get(Calendar.DAY_OF_MONTH);
+
+        Calendar calendar2 = GregorianCalendar.getInstance(); // creates a new calendar instance
+        calendar2.set(year,month,day,17,30);
+        if(calendar.getTimeInMillis() > calendar2.getTimeInMillis())
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean passesNotificationHours() {
+        Date date = new Date();   // given date
+        Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+        calendar.setTime(date);   // assigns calendar to given date
+
+        int year = calendar.get(Calendar.YEAR);
+        int month= calendar.get(Calendar.MONTH);
+        int day= calendar.get(Calendar.DAY_OF_MONTH);
+
+        Calendar calendar2 = GregorianCalendar.getInstance(); // creates a new calendar instance
+        calendar2.set(year,month,day,11,30);
+        if(calendar.getTimeInMillis() > calendar2.getTimeInMillis())
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public void setContext(Context _context) {

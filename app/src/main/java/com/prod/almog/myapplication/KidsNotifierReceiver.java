@@ -87,7 +87,7 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
 
 
     private boolean willSendSMS(Kid _kid, boolean timePassed) {
-        return !_kid.arrived && !_kid.absentConfirmed && timePassed;
+        return !_kid.arrived && !_kid.absentConfirmed && timePassed  && !Manager.me().passesNotificationHours();
     }
 
     private boolean isTimePassed(Kid _kid) {
@@ -128,14 +128,22 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
 
                 try {
                     if (kid.fatherPhone.length() > 5) {
-                        smsManager.sendTextMessage(kid.fatherPhone, null, message, null, null);
+                        ArrayList<String> messageParts = smsManager.divideMessage(message);
+                        for(String part : messageParts)
+                        {
+                            smsManager.sendTextMessage(kid.fatherPhone, null, part, null, null);
+                        }
                     }
                 } catch (Exception e) {
                     Manager.me().log("ERROR", "שגיאה בשליחת SMS" + e.getMessage() + "מספר" + kid.fatherPhone);
                 }
                 try {
                     if (kid.motherPhone.length() > 5) {
-                        smsManager.sendTextMessage(kid.motherPhone, null, message, null, null);
+                        ArrayList<String> messageParts = smsManager.divideMessage(message);
+                        for(String part : messageParts)
+                        {
+                            smsManager.sendTextMessage(kid.motherPhone, null, part, null, null);
+                        }
                     }
                 } catch (Exception e) {
                     Manager.me().log("ERROR", "שגיאה בשליחת SMS" + e.getMessage() + "מספר" + kid.motherPhone);
