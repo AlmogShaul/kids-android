@@ -7,7 +7,7 @@
     tools:context="com.prod.almog.myapplication.MainActivity"
     android:orientation="vertical">
     <TextView
-        android:text="גרסה  26"
+        android:text="גרסה  27"
         android:gravity="center"
         android:paddingRight="10px"
         android:paddingLeft="10px"
