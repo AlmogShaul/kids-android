@@ -6,37 +6,79 @@
     android:layoutDirection="rtl"
     tools:context="com.prod.almog.myapplication.MainActivity"
     android:orientation="vertical">
-    <TextView
-        android:text="גרסה  27"
-        android:gravity="center"
-        android:paddingRight="10px"
-        android:paddingLeft="10px"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:background="@color/colorAccent"
-        android:textSize="20px"
-        android:textColor="@color/background_floating_material_light"
-        android:textAlignment="viewStart" />
-    <TextView android:id="@+id/kindergarden_header"
-        android:text="גן ילדים"
-        android:gravity="center"
-        android:paddingRight="10px"
-        android:paddingLeft="10px"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        android:textSize="80px"
-        android:textColor="@color/background_floating_material_light"
-        android:textAlignment="viewStart" />
+        android:padding="10px">
+
+        <TextView android:id="@+id/kindergarden_header"
+            android:text="גן ילדים"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:textColor="@color/background_floating_material_light"
+            android:textAlignment="viewStart"
+            android:textSize="60px" />
+
+        <TextView
+            android:text="BABY SAVE"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:textColor="@color/background_floating_material_light"
+            android:textAlignment="viewStart"
+            android:textSize="40px" />
+
+
+    </LinearLayout>
     <GridView
+        android:layout_margin="20px"
         android:id="@+id/kids_list_view"
         android:layoutDirection="ltr"
         android:numColumns="auto_fit"
-        android:horizontalSpacing="10px"
+        android:horizontalSpacing="20px"
         android:verticalSpacing="10px"
-        android:columnWidth="100dp"
+        android:columnWidth="160px"
         android:stretchMode="columnWidth"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-       />
+        android:layout_weight="1" />
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       android:background="@color/colorAccent"
+       >
+
+       <TextView
+           android:text="גרסה  27"
+           android:gravity="center"
+           android:paddingRight="10px"
+           android:paddingLeft="10px"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textSize="20px"
+           android:layout_weight="1"
+           android:textAlignment="viewStart"
+           android:textColor="@color/background_floating_material_light"
+           />
+
+       <TextView
+           android:text="שירות לקוחות     05-44-528-529"
+           android:gravity="center"
+           android:paddingRight="10px"
+           android:paddingLeft="10px"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textSize="20px"
+           android:textAlignment="viewStart"
+           android:textColor="@color/background_floating_material_light"
+           />
+   </LinearLayout>
+
 </LinearLayout>
