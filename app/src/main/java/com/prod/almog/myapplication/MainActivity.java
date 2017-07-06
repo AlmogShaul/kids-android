@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         String darkScreen = Manager.me().settings.get("darkScreen");
-                        if ((isHoliday(holidays) || Manager.me().passesWorkingHours()) && darkScreen == "true") {
+                        if ((isHoliday(holidays) || Manager.me().passesWorkingHours()) && darkScreen.equals("true")) {
                                 Manager.me().darkScreen();
                         }else{
                             Manager.me().lightScreen();
