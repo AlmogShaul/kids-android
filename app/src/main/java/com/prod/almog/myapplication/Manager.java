@@ -98,7 +98,11 @@ public class Manager {
         int day= calendar.get(Calendar.DAY_OF_MONTH);
 
         Calendar calendar2 = GregorianCalendar.getInstance(); // creates a new calendar instance
-        calendar2.set(year,month,day,17,30);
+        String workingHours = Manager.me().settings.get("workingHours");
+        String[] strings = workingHours.split(":");
+        Integer hour = Integer.parseInt(strings[0]);
+        Integer min= Integer.parseInt(strings[1]);
+        calendar2.set(year,month,day,hour,min);
         if(calendar.getTimeInMillis() > calendar2.getTimeInMillis())
         {
             return true;
@@ -178,7 +182,6 @@ public class Manager {
 
 
     public void restart() {
-//        DebugScheduler.me().clearWorkers();
         if (context != null) {
             Intent i = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -264,9 +267,6 @@ public class Manager {
         }
     }
 
-    public void startSchedule() {
-//        DebugScheduler.me().startSchedule();
-    }
 
     public String getShortPhoneNum(String senderNum) {
         Integer rawLength = senderNum.length();
@@ -290,13 +290,6 @@ public class Manager {
         }
     }
 
-    private void decideIfRestart() {
-        String restart = settings.get("restart");
-        if (restart != null && restart.equals("true")) {
-            restart();
-
-        }
-    }
 
     public void log(String seveirity, String message) {
         String kindergarden = "";

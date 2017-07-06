@@ -46,8 +46,6 @@ public class FirebaseService {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         settingsRef = databaseReference.child("settings");
         kidsRef = databaseReference.child("kids");
-
-
     }
 
 

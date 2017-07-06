@@ -58,7 +58,6 @@ public class KidsNotifierService extends Service {
         am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         final Intent i = new Intent(context, KidsNotifierReceiver.class);
         final PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
-        Calendar calendar = Calendar.getInstance();
         am.setRepeating(AlarmManager.RTC_WAKEUP,0, 1000 * 60 * period,  pi); // Millisec * Second * Minute
     }
 

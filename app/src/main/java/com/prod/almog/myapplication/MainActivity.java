@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Manager.me().setContext(this);
-        Manager.me().log("INFO", "בודק");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         getKids();
@@ -127,8 +126,9 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                        if (isHoliday(holidays) || Manager.me().passesWorkingHours()) {
-                            Manager.me().darkScreen();
+                        String darkScreen = Manager.me().settings.get("darkScreen");
+                        if ((isHoliday(holidays) || Manager.me().passesWorkingHours()) && darkScreen == "true") {
+                                Manager.me().darkScreen();
                         }else{
                             Manager.me().lightScreen();
                         }
@@ -140,16 +140,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isHoliday(ArrayList<Date> holidays) {
-        boolean sameDay = false;
-        Calendar cal1 = Calendar.getInstance();
-        Calendar cal2 = Calendar.getInstance();
-        cal1.setTime(new Date());
-        for (Date date : holidays) {
-            cal2.setTime(date);
-            sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+
+        try {
+            boolean sameDay = false;
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+            cal1.setTime(new Date());
+            if (cal1.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
+                return true;
+            else {
+                for (Date date : holidays) {
+                    cal2.setTime(date);
+                    sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                }
+                return sameDay;
+            }
         }
-        return sameDay;
+        catch (Exception e){
+            return  false;
+        }
     }
 
     GridView yourListView;

@@ -22,17 +22,25 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
     ArrayList<Date> holidays = new ArrayList<>();
 
     private boolean isHoliday() {
-        boolean sameDay = false;
-        Calendar cal1 = Calendar.getInstance();
-        Calendar cal2 = Calendar.getInstance();
-        cal1.setTime(new Date());
-        for (Date date : holidays) {
-            cal2.setTime(date);
-            sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-            if (sameDay == true) return sameDay;
+        try {
+            boolean sameDay = false;
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+            cal1.setTime(new Date());
+            if(cal1.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
+                return  true;
+            else {
+                for (Date date : holidays) {
+                    cal2.setTime(date);
+                    sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                    if (sameDay == true) return sameDay;
+                }
+                return sameDay;
+            }
+        }catch (Exception e){
+            return  false;
         }
-        return sameDay;
     }
 
     private void parseHolidays() {
