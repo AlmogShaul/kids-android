@@ -95,7 +95,7 @@ public class KidItemAdapter extends ArrayAdapter<Kid> {
                     image_view.setImageBitmap(resized);
                 }
             else{
-                    Drawable face = this.getContext().getResources().getDrawable(R.drawable.kid_face,null);
+                    Drawable face = this.getContext().getResources().getDrawable(R.drawable.kid_face_light,null);
                     image_view.setImageDrawable(face);
 //                    image_view.setImageBitmap(Drawable.createFromResourceStream(R.drawable.kid_face));
 

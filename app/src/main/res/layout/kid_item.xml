@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100px"
+    android:layout_height="match_parent"
     >
 
 
@@ -36,6 +36,7 @@
         android:textSize="16px"
         android:textStyle="bold"
         android:text="שם"
+        android:layout_margin="5px"
         android:layout_gravity="bottom"
         android:alpha="0.7" />
 

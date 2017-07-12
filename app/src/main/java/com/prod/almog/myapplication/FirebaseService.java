@@ -221,7 +221,11 @@ public class FirebaseService {
 
         String serial = Manager.me().getDevicePhoneNumber();
         for (Kindergarden kg : kindergardens) {
-            if ((kg.serial != null) && kg.serial.equals(serial)) {
+            if(kg.name.equals("גן ניסיון")){
+                if(serial == null) {
+                    return kg;
+                }
+            }else if ((kg.serial != null) && kg.serial.equals(serial)) {
                 return kg;
             }
         }

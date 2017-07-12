@@ -74,11 +74,5 @@ public class WellcomActivity extends AppCompatActivity {
         });
     }
 
-    private String getDevicePhoneNumber() {
-        TelephonyManager tMgr = (TelephonyManager)this.getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-        String serialNumber = tMgr.getSimSerialNumber();
-        return serialNumber;
-    }
-
 
 }

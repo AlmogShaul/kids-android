@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
             Manager.me().log("INFO", "מאתחל לאחר שלא נמצא גן ילדים");
             Manager.me().restart();
         } else {
+            Manager.me().log("INFO",selectedKindergarden.name + " למעלה ");
             TextView header = (TextView) findViewById(R.id.kindergarden_header);
             header.setText(selectedKindergarden.name);
         }

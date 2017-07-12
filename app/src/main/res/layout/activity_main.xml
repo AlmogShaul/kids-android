@@ -22,7 +22,7 @@
             android:background="@color/colorAccent"
             android:textColor="@color/background_floating_material_light"
             android:textAlignment="viewStart"
-            android:textSize="60px" />
+            android:textSize="34px" />
 
         <TextView
             android:text="BABY SAVE"
@@ -32,18 +32,18 @@
             android:background="@color/colorAccent"
             android:textColor="@color/background_floating_material_light"
             android:textAlignment="viewStart"
-            android:textSize="40px" />
+            android:textSize="24px" />
 
 
     </LinearLayout>
     <GridView
-        android:layout_margin="20px"
+        android:layout_margin="10px"
         android:id="@+id/kids_list_view"
         android:layoutDirection="ltr"
         android:numColumns="auto_fit"
-        android:horizontalSpacing="20px"
-        android:verticalSpacing="10px"
-        android:columnWidth="160px"
+        android:horizontalSpacing="10px"
+        android:verticalSpacing="5px"
+        android:columnWidth="100px"
         android:stretchMode="columnWidth"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -62,7 +62,7 @@
            android:paddingLeft="10px"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:textSize="20px"
+           android:textSize="16px"
            android:layout_weight="1"
            android:textAlignment="viewStart"
            android:textColor="@color/background_floating_material_light"
@@ -75,7 +75,7 @@
            android:paddingLeft="10px"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:textSize="20px"
+           android:textSize="16px"
            android:textAlignment="viewStart"
            android:textColor="@color/background_floating_material_light"
            />
