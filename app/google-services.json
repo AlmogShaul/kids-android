@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:16965481247:android:10fb4d9eac0e7781",
         "android_client_info": {
-          "package_name": "com.prod.almog.myapplication"
+          "package_name": "com.prod.almog.babysave"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "16965481247-jppdlti17jhq5a4e5162pvrgb04a27s2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.prod.almog.myapplication",
+            "package_name": "com.prod.almog.babysave",
             "certificate_hash": "FBC3DA0FF3D3075C43D8D3CE3FDC29BF327C563D"
           }
         },

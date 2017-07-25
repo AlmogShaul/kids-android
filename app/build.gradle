@@ -5,7 +5,7 @@ android {
     buildToolsVersion '22.0.0'
 
     defaultConfig {
-        applicationId "com.prod.almog.myapplication"
+        applicationId "com.prod.almog.babysave"
         minSdkVersion 21
         targetSdkVersion 22
         versionCode 1
