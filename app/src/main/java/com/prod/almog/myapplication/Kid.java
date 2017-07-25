@@ -1,5 +1,7 @@
 package com.prod.almog.myapplication;
 
+import java.util.Date;
+
 /**
  * Created by shaul.almog on 04/11/2016.
  */
@@ -14,6 +16,8 @@ public class Kid {
     Boolean arrived;
     String reminderTime;
     Boolean messageSent;
+    Date vacationPeriodFrom;
+    Date vacationPeriodTo;
 
     public Kid(){
         absentConfirmed = false;
@@ -25,6 +29,8 @@ public class Kid {
         arrived = false;
         reminderTime = "10:00";
         messageSent = false;
+        vacationPeriodFrom = null;
+        vacationPeriodTo = null;
     }
 
 }

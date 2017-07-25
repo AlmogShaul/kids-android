@@ -186,6 +186,8 @@ public class FirebaseService {
         HashMap list = (HashMap) dataSnapshot.getValue();
         if (list == null) return;
         try {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
             Kid kid = new Kid();
             kid.id = (String) dataSnapshot.getKey();
             kid.name = (String) list.get("name");
@@ -194,6 +196,23 @@ public class FirebaseService {
             kid.motherPhone = (String) list.get("motherPhone");
             kid.fatherPhone = (String) list.get("fatherPhone");
             kid.reminderTime = (String) list.get("reminderTime");
+            if(list.get("vacationPeriodTo") != null)
+            {
+                try {
+                    kid.vacationPeriodTo = format.parse((String)list.get("vacationPeriodTo"));
+                }catch (Exception e){
+                    Manager.me().log("ERROR",kid.name + ": vacationPeriodTo is not valid");
+                }
+
+            }
+            if(list.get("vacationPeriodFrom") != null){
+                try {
+                    kid.vacationPeriodFrom = format.parse((String)list.get("vacationPeriodFrom"));
+                }catch (Exception e){
+                    Manager.me().log("ERROR",kid.name + ": vacationPeriodFrom is not valid");
+                }
+            }
+
             kid.arrived = (Boolean) list.get("arrived");
             kid.absentConfirmed = (Boolean) list.get("absentConfirmed");
 

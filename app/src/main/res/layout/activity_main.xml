@@ -6,36 +6,39 @@
     android:layoutDirection="rtl"
     tools:context="com.prod.almog.myapplication.MainActivity"
     android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/colorAccent"
+        android:background="@color/headerColor"
         android:padding="10px">
 
         <TextView android:id="@+id/kindergarden_header"
             android:text="גן ילדים"
+            android:textColor="@color/darkColor"
             android:gravity="center"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:textColor="@color/background_floating_material_light"
+            android:background="@color/headerColor"
             android:textAlignment="viewStart"
             android:textSize="34px" />
 
         <TextView
-            android:text="BABY SAVE"
+            android:text="baby save"
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:textColor="@color/background_floating_material_light"
+            android:background="@color/headerColor"
+            android:textColor="@color/darkColor"
             android:textAlignment="viewStart"
-            android:textSize="24px" />
+            android:textSize="24px"
+            android:textStyle="normal|bold" />
 
 
     </LinearLayout>
+
     <GridView
         android:layout_margin="10px"
         android:id="@+id/kids_list_view"
@@ -52,11 +55,11 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:orientation="horizontal"
-       android:background="@color/colorAccent"
+       android:background="@color/headerColor"
        >
 
        <TextView
-           android:text="גרסה  27"
+           android:text="גרסה  1.0"
            android:gravity="center"
            android:paddingRight="10px"
            android:paddingLeft="10px"

@@ -85,8 +85,7 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
 
     private void NotifyRelevantKids(ArrayList<Kid> kids) {
         for (Kid kid : kids) {
-            boolean timePassed = isTimePassed(kid);
-            boolean willSendSMS = willSendSMS(kid, timePassed);
+            boolean willSendSMS = willSendSMS(kid);
             if (willSendSMS) {
                 sendSMS(kid);
             }
@@ -94,8 +93,12 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
     }
 
 
-    private boolean willSendSMS(Kid _kid, boolean timePassed) {
-        return !_kid.arrived && !_kid.absentConfirmed && timePassed  && !Manager.me().passesNotificationHours();
+    private boolean willSendSMS(Kid _kid) {
+        return !_kid.arrived &&
+                !_kid.absentConfirmed &&
+                !isOnVacation(_kid) &&
+                isTimePassed(_kid)  &&
+                !Manager.me().passesNotificationHours();
     }
 
     private boolean isTimePassed(Kid _kid) {
@@ -110,6 +113,25 @@ public class KidsNotifierReceiver extends BroadcastReceiver {
         }
     }
 
+    private boolean isOnVacation(Kid _kid){
+        try {
+            Date now = new Date();
+            if(_kid.vacationPeriodFrom != null && _kid.vacationPeriodTo != null){
+                if((now.getTime() > _kid.vacationPeriodFrom.getTime()) && (now.getTime() < _kid.vacationPeriodTo.getTime())){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+
+        } catch (Exception e) {
+            Manager.me().log("ERROR", "שגיאה במציאת אם הזמן עבר" + e.getMessage());
+            return false;
+        }
+
+    }
 
     private Integer getNowTimeInt() {
         Date date = new Date();   // given date

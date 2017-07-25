@@ -174,45 +174,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void updateKid(DataSnapshot dataSnapshot) {
-        HashMap list = (HashMap) dataSnapshot.getValue();
-        if (list == null) return;
-        try {
-            Kid kid = new Kid();
-            kid.id = (String) dataSnapshot.getKey();
-            kid.name = (String) list.get("name");
-            kid.father = (String) list.get("father");
-            kid.mother = (String) list.get("mother");
-            kid.motherPhone = (String) list.get("motherPhone");
-            kid.fatherPhone = (String) list.get("fatherPhone");
-            kid.reminderTime = (String) list.get("reminderTime");
-            kid.arrived = (Boolean) list.get("arrived");
-            kid.absentConfirmed = (Boolean) list.get("absentConfirmed");
-
-            if (kid.absentConfirmed == null) kid.absentConfirmed = false;
-            if (kid.arrived == null) kid.arrived = false;
-
-
-            for (int i = 0; i < kids.size(); i++) {
-                if (kids.get(i).id.equals(kid.id)) {
-                    kids.remove(i);
-                }
-            }
-            kids.add(kid);
-
-            storageRef = firebaseStorage.getReferenceFromUrl("gs://kids-f5aa3.appspot.com");
-
-            for (Kid _kid : kids) {
-                getPicByKidsId(_kid.id);
-            }
-
-            updateList();
-
-
-        } catch (Exception e) {
-        }
-
-    }
 
     private void updateList() {
         customAdapter.sort(new Comparator<Kid>() {
@@ -223,29 +184,6 @@ public class MainActivity extends AppCompatActivity {
         });
         customAdapter.notifyDataSetChanged();
     }
-
-    private void updateKids(DataSnapshot dataSnapshot) {
-        HashMap list = (HashMap) dataSnapshot.getValue();
-        if (list == null) return;
-        kids.clear();
-        try {
-            Iterator it = list.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                Kid kid = createKid(pair);
-                if (kinderGardenKidsIds.contains(kid.id)) {
-                    kids.add(kid);
-                }
-                it.remove();
-            }
-
-            updateList();
-
-
-        } catch (Exception e) {
-        }
-    }
-
 
     private void getPicByKidsId(final String kidId) {
 
@@ -270,25 +208,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
-    @NonNull
-    private Kid createKid(Map.Entry pair) {
-        Kid kid = new Kid();
-        HashMap rawKid = (HashMap) pair.getValue();
-        kid.id = (String) pair.getKey();
-        kid.name = (String) rawKid.get("name");
-        kid.father = (String) rawKid.get("father");
-        kid.mother = (String) rawKid.get("mother");
-        kid.motherPhone = (String) rawKid.get("motherPhone");
-        kid.fatherPhone = (String) rawKid.get("fatherPhone");
-        kid.reminderTime = (String) rawKid.get("reminderTime");
-        kid.arrived = (Boolean) rawKid.get("arrived");
-        kid.absentConfirmed = (Boolean) rawKid.get("absentConfirmed");
-        if (kid.absentConfirmed == null) kid.absentConfirmed = false;
-        if (kid.arrived == null) kid.arrived = false;
-        return kid;
-    }
-
 
     public void getKids() {
 
